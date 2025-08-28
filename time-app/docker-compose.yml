@@ -1,0 +1,46 @@
+version: '3'
+services:
+  frontend:
+    build: ./frontend
+    restart: always
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+  api:
+    build: ./api
+    restart: always
+    ports:
+      - '5555:5000'
+    depends_on:
+      - mysql
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    environment:
+     MYSQL_HOST: mysql
+     MYSQL_PORT: '3306'
+     MYSQL__USER: root
+     MYSQL_DATABASE: time_db
+     MYSQL_PASSWORD: password
+     CHOKIDAR_USEPOLLING: true
+
+  mysql: 
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: time_db
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  adminer: 
+    image: adminer
+    restart: always
+    ports:
+      - '8888:8080'
+
+volumes:
+  mysql_data:
